@@ -1,35 +1,29 @@
-<script>
-  import { onMount } from 'svelte'
-  let usersList
+<script lang="ts">
+
   async function fetchData() {
     try {
-      const res = await fetch('http://localhost:3000/'); // Include the protocol and the full path
-      console.log(res);
+      const res = await fetch('http://localhost:3000');
       const data = await res.json();
-      console.log(data);
       return data;
     } catch (error) {
       console.error(error);
-      throw error; // Rethrow the error to trigger the catch block in the template
+      throw error;
     }
   }
 
-  onMount( async () => {
-    usersList = await fetchData()
-  })
 </script>
 
 <main>
-  {#await usersList}
+  {#await fetchData()}
     <p>Fetching Data</p>
-  {:then users}
-    <!-- <ol>
-      {#each users as user}
-        <li>{user}</li>
-      {/each}
-    </ol> -->
-    {@debug users}
+  {:then data}
+    {@const users = data.users}
+    <ol>
+    {#each users as user}
+       <li>{user}</li>
+    {/each}
+    </ol>
   {:catch error}
-    <p>Something went wrong! {error.message}</p>
+    <!-- fetchData was rejected -->
   {/await}
 </main>
